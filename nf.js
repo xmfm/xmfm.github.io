@@ -5,6 +5,5 @@ var interval = setInterval(() => {
 // 由于 tag 参数，我们应该只能看到“Hi！9”通知
 var body = '这是第'+i+'个';
 const n = new Notification("通知", { body:body, icon:"/favicon.ico", tag:"1", renotify:true});
-Notification.requestPermission(function(status) {var n=new Notification('123',{body:body});});
 i++;
 }, 2000);
