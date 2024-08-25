@@ -12,10 +12,6 @@ window.addEventListener("load", () => {
   buttonOn.addEventListener("click", () => {
     if (Notification?.permission === "granted") {
       w = new Worker("nf.js");
-      w.onmessage = function(e){
-        var body = '这是第'+e+'个';
-        const n = new Notification("通知", { body:body, icon:"/favicon.ico", tag:"1", renotify:true});
-      };
     } else if (Notification?.permission !== "denied"){
         // 如果用户没有告诉他们是否想要收到通知（注意：由于 Chrome，我们不确定是否设置了权限属性），因此检查“默认”值是不安全的。
         Notification.requestPermission().then((status) => {
