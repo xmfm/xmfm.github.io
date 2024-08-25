@@ -6,4 +6,4 @@ var interval = setInterval(() => {
 var body = '这是第'+i+'个';
 const n = new Notification("通知", { body:body, icon:"/favicon.ico", tag:"1", renotify:true});
 i++;
-}, 2000);
+}, 60000);
