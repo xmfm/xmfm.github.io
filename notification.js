@@ -2,7 +2,7 @@ window.addEventListener("load", () => {
   const buttonOn = document.querySelector("#on");
   const buttonOff = document.querySelector("#off");
 
-  const interval = null;
+  var iterval = null;
   
   // 如果用户没有告诉他们是否想要收到通知（注意：由于 Chrome，我们不确定是否设置了权限属性），因此检查“默认”值是不安全的。
   Notification.requestPermission().then((status) => {
