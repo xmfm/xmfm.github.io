@@ -1,10 +1,10 @@
 const reader = new FileReader();
 var contents;
+reader.readAsText('JLPT.csv');
 reader.onload = function(e) {
   contents = e.target.result;
   contents = contents.split('\n');
 };
-reader.readAsText('/JLPT.csv');
 
 var i = 0;
 
