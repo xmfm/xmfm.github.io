@@ -1,10 +1,17 @@
-const reader = new FileReader();
 var contents;
-reader.readAsText('JLPT.csv');
-reader.onload = function(e) {
-  contents = e.target.result;
-  contents = contents.split('\n');
-};
+fetch("./test.csv")
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.text();
+    })
+    .then(text => {
+        contents = text.split('\n');
+    })
+    .catch(error => {
+        console.error('Error fetching file:', error);
+    });
 
 var i = 0;
 
