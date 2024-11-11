@@ -68,7 +68,7 @@ function startNotificationCycle() {
     var contents = "";
 
     if (source === "text") {
-        contents = document.getElementById("contentInput").value;
+        contents = document.getElementById("contentInput").value.split('\n');
     } else if (source === "built-in") {
         fetch("/res/JLPT.csv")
             .then(response => {
@@ -78,19 +78,27 @@ function startNotificationCycle() {
                 return response.text();
             })
             .then(text => {
-                contents = text;
+                contents = text.split('\n');
             })
             .catch(error => {
                 console.error('Error fetching file:', error);
             });
+    } else if (source === "file") {
+        const file = document.getElementById("contentInput").files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                contents = e.target.result.split('\n');
+            };
+            reader.readAsText(file);
+        }
     }
 
-    if (contents==="" || isNaN(interval) || interval <= 0 || isNaN(repeatCount) || repeatCount < 0) {
-        alert("请设置好通知内容、时间间隔和重复次数");
+    if (isNaN(interval) || interval <= 0 || isNaN(repeatCount) || repeatCount < 0) {
+        alert("请设置好时间间隔和重复次数");
         document.getElementById("notificationToggle").checked = false;
         return;
     }
-    contents = contents.split('\n');
 
     let remainingRepeats = repeatCount;
     let i = 0;
@@ -102,10 +110,10 @@ function startNotificationCycle() {
             content = contents[i];
             i = (i+1)%contents.length;
         } else {
-            contents[Math.floor(Math.random()*contents.length)];
+            content = contents[Math.floor(Math.random()*contents.length)];
         }
-        alert(content);
-        // const n = new Notification("通知", { body:content, icon:"/favicon.ico", tag:"1", renotify:true});
+        // alert(content);
+        const n = new Notification("通知", { body:content, icon:"/favicon.ico", tag:"1", renotify:true});
         nextNotification.textContent = new Date(Date.now() + interval).toLocaleTimeString();
         if (remainingRepeats === 1) {stopNotificationCycle(); return;}
         if (remainingRepeats > 1) {remainingRepeats -= 1;}
