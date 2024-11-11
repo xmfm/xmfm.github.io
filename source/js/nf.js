@@ -16,7 +16,7 @@ function updateContentInput() {
         contentInput.rows = 4;
     } else if (source === "built-in") {
         contentInput = document.createElement("select");
-        const options = ["预设内容1", "预设内容2", "预设内容3"];
+        const options = ["N5-N1"];
         options.forEach((optionText) => {
             const option = document.createElement("option");
             option.value = optionText;
@@ -61,23 +61,43 @@ function toggleNotifications() {
 let notificationIntervalId;
 
 function startNotificationCycle() {
-    const content = document.getElementById("contentInput").value;
+    const source = document.getElementById("source").value;
     const interval = parseInt(document.getElementById("interval").value * 1000 * 60, 10);
     const repeatCount = parseInt(document.getElementById("repeatCount").value, 10);
     const nextNotification = document.getElementById("nextNotification");
+    var contents = "";
 
-    if (content==="" || isNaN(interval) || interval <= 0 || isNaN(repeatCount) || repeatCount < 0) {
+    if (source === "text") {
+        contents = document.getElementById("contentInput").value;
+    } else if (source === "built-in") {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            contents = e.target.result;
+        };
+        reader.readAsText("JLPT.txt");
+    }
+
+    if (contents==="" || isNaN(interval) || interval <= 0 || isNaN(repeatCount) || repeatCount < 0) {
         alert("请设置好通知内容、时间间隔和重复次数");
         document.getElementById("notificationToggle").checked = false;
         return;
     }
+    contents = contents.split('\n');
 
     let remainingRepeats = repeatCount;
+    let i = 0;
     nextNotification.textContent = new Date(Date.now() + interval).toLocaleTimeString();
 
     notificationIntervalId = setInterval(() => {
-        // alert(content);
-        const n = new Notification("通知", { body:content, icon:"/favicon.ico", tag:"1", renotify:true});
+        var content = "";
+        if (source === "text") {
+            content = contents[i];
+            i = (i+1)%contents.length;
+        } else {
+            contents[Math.floor(Math.random()*contents.length)];
+        }
+        alert(content);
+        // const n = new Notification("通知", { body:content, icon:"/favicon.ico", tag:"1", renotify:true});
         nextNotification.textContent = new Date(Date.now() + interval).toLocaleTimeString();
         if (remainingRepeats > 1) {remainingRepeats -= 1;}
         if (remainingRepeats === 1) {stopNotificationCycle(); return;}
