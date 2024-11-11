@@ -1,23 +1,91 @@
-var contents;
-fetch("/res/JLPT.csv")
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+window.addEventListener("load", () => {
+    updateContentInput();
+});
+
+function updateContentInput() {
+    const source = document.getElementById("source").value;
+    const contentGroup = document.getElementById("contentGroup");
+
+    // 清空内容
+    contentGroup.innerHTML = "";
+
+    let contentInput;
+    if (source === "text") {
+        contentInput = document.createElement("textarea");
+        contentInput.placeholder = "请输入通知内容";
+        contentInput.rows = 4;
+    } else if (source === "built-in") {
+        contentInput = document.createElement("select");
+        const options = ["预设内容1", "预设内容2", "预设内容3"];
+        options.forEach((optionText) => {
+            const option = document.createElement("option");
+            option.value = optionText;
+            option.text = optionText;
+            contentInput.add(option);
+        });
+    } else if (source === "file") {
+        contentInput = document.createElement("input");
+        contentInput.type = "file";
+        contentInput.accept = "text/plain,text/csv";
+    }
+
+    if (contentInput) {
+        contentInput.id = "contentInput";
+        contentInput.style.width = "100%";
+        contentGroup.appendChild(contentInput);
+    }
+}
+
+function toggleNotifications() {
+    const isEnabled = document.getElementById("notificationToggle").checked;
+    if (isEnabled) {
+        if (Notification?.permission === "granted") {
+            startNotificationCycle();
+        } else {
+            if (Notification?.permission !== "denied"){
+                // 如果用户没有告诉他们是否想要收到通知（注意：由于 Chrome，我们不确定是否设置了权限属性），因此检查“默认”值是不安全的。
+                Notification.requestPermission().then((status) => {
+                // 如果用户同意
+                if (status === "granted") {
+                    const n = new Notification(`授权成功`, {body:"请重新点击开始"});
+                } else {alert("授权被拒绝，想继续使用请刷新重试");}
+                });
+            } else {alert("授权被拒绝，想继续使用请刷新重试");}
+            document.getElementById("notificationToggle").checked = false;
         }
-        return response.text();
-    })
-    .then(text => {
-        contents = text.split('\n');
-    })
-    .catch(error => {
-        console.error('Error fetching file:', error);
-    });
+    } else {
+        stopNotificationCycle();
+    }
+}
 
-var i = 0;
+let notificationIntervalId;
 
-var interval = setInterval(() => {
+function startNotificationCycle() {
+    const content = document.getElementById("contentInput").value;
+    const interval = parseInt(document.getElementById("interval").value * 1000 * 60, 10);
+    const repeatCount = parseInt(document.getElementById("repeatCount").value, 10);
+    const nextNotification = document.getElementById("nextNotification");
 
-var body = contents[Math.floor(Math.random()*contents.length)];
-const n = new Notification("通知", { body:body, icon:"/favicon.ico", tag:"1", renotify:true});
-i++;
-}, 1000*60*15);
+    if (content==="" || isNaN(interval) || interval <= 0 || isNaN(repeatCount) || repeatCount < 0) {
+        alert("请设置好通知内容、时间间隔和重复次数");
+        document.getElementById("notificationToggle").checked = false;
+        return;
+    }
+
+    let remainingRepeats = repeatCount;
+    nextNotification.textContent = new Date(Date.now() + interval).toLocaleTimeString();
+
+    notificationIntervalId = setInterval(() => {
+        // alert(content);
+        const n = new Notification("通知", { body:content, icon:"/favicon.ico", tag:"1", renotify:true});
+        nextNotification.textContent = new Date(Date.now() + interval).toLocaleTimeString();
+        if (remainingRepeats > 1) {remainingRepeats -= 1;}
+        if (remainingRepeats === 1) {stopNotificationCycle(); return;}
+    }, interval);
+}
+
+function stopNotificationCycle() {
+    clearInterval(notificationIntervalId);
+    document.getElementById("nextNotification").textContent = "----";
+    document.getElementById("notificationToggle").checked = false;
+}

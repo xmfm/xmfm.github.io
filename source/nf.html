@@ -1,14 +1,52 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<html lang="zh">
 <head>
-<meta charset="utf-8">
-<title>定时通知</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>定时通知</title>
+    <link rel="stylesheet" href="css/nf.css">
 </head>
 <body>
-	<h1>定时通知</h1>
-	<button id="on">开始</button>
-	<button id="off">结束</button>
-	<script src="js/notification.js"></script>
-	<script src="js/nf.js"></script>
+    <div class="container">
+        <h1>定时通知</h1>
+        
+        <div class="form-group">
+            <label for="source">内容来源</label>
+            <select id="source" onchange="updateContentInput()">
+                <option value="text" selected>文本</option>
+                <option value="built-in">网站内置</option>
+                <option value="file">本地文件</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="contentGroup">
+            <!-- 内容输入框根据来源动态生成 -->
+        </div>
+
+        <div class="form-group">
+            <label for="repeatCount">设置重复次数</label>
+            <input type="number" id="repeatCount" min="0" placeholder="请输入次数，0为一直重复" value=0>
+        </div>
+
+        <div class="form-group">
+            <label for="interval">设置时间间隔（分钟）</label>
+            <input type="number" id="interval" min="1" placeholder="请输入分钟数" value=5>
+        </div>
+
+        <div class="form-group">
+            <label>下次通知时间</label>
+            <p id="nextNotification">----</p>
+        </div>
+
+        <div class="form-group">
+            <label>通知开关</label>
+            <label class="switch">
+                <input type="checkbox" id="notificationToggle" onchange="toggleNotifications()">
+                <span class="slider round"></span>
+            </label>
+        </div>
+    </div>
+
+    <script src="js/nf.js"></script>
 </body>
 </html>
