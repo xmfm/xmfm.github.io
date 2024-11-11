@@ -75,7 +75,10 @@ function startNotificationCycle() {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                contents = response.text();
+                return response.text();
+            })
+            .then(text => {
+                contents = text;
             })
             .catch(error => {
                 console.error('Error fetching file:', error);
@@ -104,8 +107,8 @@ function startNotificationCycle() {
         alert(content);
         // const n = new Notification("通知", { body:content, icon:"/favicon.ico", tag:"1", renotify:true});
         nextNotification.textContent = new Date(Date.now() + interval).toLocaleTimeString();
-        if (remainingRepeats > 1) {remainingRepeats -= 1;}
         if (remainingRepeats === 1) {stopNotificationCycle(); return;}
+        if (remainingRepeats > 1) {remainingRepeats -= 1;}
     }, interval);
 }
 
