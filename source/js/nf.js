@@ -70,11 +70,16 @@ function startNotificationCycle() {
     if (source === "text") {
         contents = document.getElementById("contentInput").value;
     } else if (source === "built-in") {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            contents = e.target.result;
-        };
-        reader.readAsText("JLPT.txt");
+        fetch("/res/JLPT.csv")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                contents = response.text();
+            })
+            .catch(error => {
+                console.error('Error fetching file:', error);
+            });
     }
 
     if (contents==="" || isNaN(interval) || interval <= 0 || isNaN(repeatCount) || repeatCount < 0) {
