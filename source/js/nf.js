@@ -107,17 +107,18 @@ function startNotificationCycle() {
     notificationIntervalId = setInterval(() => {
         var content = "";
         if (source === "text") {
-            content = contents[i];
             i = (i+1)%contents.length;
         } else {
-            content = contents[Math.floor(Math.random()*contents.length)];
+            i = Math.floor(Math.random()*contents.length);
         }
+        content = contents[i];
         // alert(content);
-        const n = new Notification("通知", { body:content, icon:"/favicon.ico", tag:"1", renotify:true});
+        const n = new Notification("第"+i+"行", { body:content, icon:"/images/ko.png", tag:"1", renotify:true});
         nextNotification.textContent = new Date(Date.now() + interval).toLocaleTimeString();
         if (remainingRepeats === 1) {stopNotificationCycle(); return;}
         if (remainingRepeats > 1) {remainingRepeats -= 1;}
     }, interval);
+    const n = new Notification("开启成功", { body:'定时通知任务开启成功', icon:"/images/ko.png", tag:"1", renotify:true});
 }
 
 function stopNotificationCycle() {
