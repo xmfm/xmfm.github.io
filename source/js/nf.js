@@ -101,7 +101,7 @@ function startNotificationCycle() {
     }
 
     let remainingRepeats = repeatCount;
-    let i = 0;
+    let i = -1;
     nextNotification.textContent = new Date(Date.now() + interval).toLocaleTimeString();
 
     notificationIntervalId = setInterval(() => {
