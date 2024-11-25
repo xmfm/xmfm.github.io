@@ -113,7 +113,7 @@ function startNotificationCycle() {
         }
         content = contents[i];
         // alert(content);
-        const n = new Notification("第"+i+"行", { body:content, icon:"/images/ko.png", tag:"1", renotify:true});
+        const n = new Notification("第"+(i+1)+"行", { body:content, icon:"/images/ko.png", tag:"1", renotify:true});
         nextNotification.textContent = new Date(Date.now() + interval).toLocaleTimeString();
         if (remainingRepeats === 1) {stopNotificationCycle(); return;}
         if (remainingRepeats > 1) {remainingRepeats -= 1;}
@@ -123,6 +123,6 @@ function startNotificationCycle() {
 
 function stopNotificationCycle() {
     clearInterval(notificationIntervalId);
-    document.getElementById("nextNotification").textContent = "----";
+    document.getElementById("nextNotification").textContent = "--:--:--";
     document.getElementById("notificationToggle").checked = false;
 }
