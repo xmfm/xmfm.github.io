@@ -637,7 +637,7 @@ style:
     # background: var(--leftbar-bg)
     # background-image: url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.13/image/sidebar-bg1@small.jpg)
     background-image: url(/images/rikka.jpg)
-    blur-px: 100px
+    blur-px: 3px
     blur-bg: var(--alpha60)
   paginator:
     prev: https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/arrow/f049bbd4e88ec.svg
