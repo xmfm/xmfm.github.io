@@ -53,6 +53,22 @@ menubar:
     #   icon: solar:chat-square-like-bold-duotone
     #   title: 社交
     #   url: /friends/
+  - id: post
+    icon: https://www.bilibili.com/favicon.ico
+    title: bilibili
+    url: https://space.bilibili.com/4298216
+  - id: post
+    icon: https://www.yuque.com/favicon.ico
+    title: 语雀
+    url: https://www.yuque.com/xmfm
+  - id: post
+    icon: https://github.com/favicon.ico
+    title: GitHub
+    url: https://www.github.com/xmfm
+  - id: post
+    icon: https://www.icloud.com.cn/system/icloud.com/2426Hotfix47/db8dbf8664914b03532511dd45f27ca9.png
+    title: 邮箱
+    url: mailto:rikka@takanasi.com
 
 
 ######## Main ########
@@ -61,7 +77,7 @@ site_tree:
   # -- 列表类页面 -- #
   # 主页配置
   home:
-    leftbar: weblinks, sitelinks, welcome, recent
+    leftbar: welcome, recent
     rightbar: 
   # 博客列表页配置
   index_blog:
@@ -621,7 +637,7 @@ style:
     # background: var(--leftbar-bg)
     # background-image: url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.13/image/sidebar-bg1@small.jpg)
     background-image: url(/images/rikka.jpg)
-    blur-px: 3px
+    blur-px: 100px
     blur-bg: var(--alpha60)
   paginator:
     prev: https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/arrow/f049bbd4e88ec.svg
