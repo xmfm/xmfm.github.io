@@ -15,7 +15,7 @@ timezone: 'Asia/Shanghai'
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
 url: https://takanasi.com
-permalink: :category/:title/
+permalink: :title/
 permalink_defaults:
 pretty_urls:
   trailing_index: false # Set to false to remove trailing 'index.html' from permalinks
@@ -68,11 +68,12 @@ index_generator:
 default_category: uncategorized
 category_map:
   "MBTI": mbti
-tag_map:
   "计算机": cs
   "书籍": book
   "音乐": music
   "动画": anime
+tag_map:
+
 
 # Metadata elements
 ## https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta
