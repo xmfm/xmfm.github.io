@@ -100,5 +100,8 @@ sitelinks:
   column: 1
   items:
   - icon: 
+    title: 关于我
+    url: /about/
+  - icon: 
     title: 定时通知
     url: /notifytimer
