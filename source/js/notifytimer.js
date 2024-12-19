@@ -16,7 +16,7 @@ function updateContentInput() {
         contentInput.rows = 4;
     } else if (source === "built-in") {
         contentInput = document.createElement("select");
-        const options = ["N5-N1"];
+        const options = ["N5","N4","N3","N2","N1"];
         options.forEach((optionText) => {
             const option = document.createElement("option");
             option.value = optionText;
@@ -64,12 +64,15 @@ function startNotificationCycle() {
     const source = document.getElementById("source").value;
     const interval = parseInt(document.getElementById("interval").value * 1000 * 60, 10);
     const repeatCount = parseInt(document.getElementById("repeatCount").value, 10);
+    const select_mode = document.getElementById("select-mode").value;
     const nextNotification = document.getElementById("nextNotification");
-    var contents = "";
+    var contents;
 
     if (source === "text") {
         contents = document.getElementById("contentInput").value.split('\n');
     } else if (source === "built-in") {
+        contentInput = document.getElementById("contentInput").value;
+        contents = [];
         fetch("/res/JLPT.csv")
             .then(response => {
                 if (!response.ok) {
@@ -78,7 +81,13 @@ function startNotificationCycle() {
                 return response.text();
             })
             .then(text => {
-                contents = text.split('\n');
+                let contents_all = text.split('\n');
+                for (var i = 0; i < contents_all.length; i++) {
+                    var line = contents_all[i];
+                    if (line[line.length-1] === contentInput[1] || line[line.length-3] === contentInput[1]) {
+                        contents.push(line);
+                    }
+                }
             })
             .catch(error => {
                 console.error('Error fetching file:', error);
@@ -105,15 +114,21 @@ function startNotificationCycle() {
     nextNotification.textContent = new Date(Date.now() + interval).toLocaleTimeString();
 
     notificationIntervalId = setInterval(() => {
+        var title = "";
         var content = "";
-        if (source === "text") {
+        if (select_mode === "order") {
             i = (i+1)%contents.length;
         } else {
             i = Math.floor(Math.random()*contents.length);
         }
         content = contents[i];
         // alert(content);
-        const n = new Notification("第"+(i+1)+"行", { body:content, icon:"/images/ko.png", tag:"1", renotify:true});
+        if (source === "built-in"){
+            title = content.split(",")[0];
+        } else {
+            title = "第"+(i+1)+"行";
+        }
+        const n = new Notification(title, { body:content, icon:"/images/ko.png", tag:"1", renotify:true});
         nextNotification.textContent = new Date(Date.now() + interval).toLocaleTimeString();
         if (remainingRepeats === 1) {stopNotificationCycle(); return;}
         if (remainingRepeats > 1) {remainingRepeats -= 1;}
