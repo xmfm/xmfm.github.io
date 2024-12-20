@@ -123,8 +123,21 @@ function startNotificationCycle() {
         }
         content = contents[i];
         // alert(content);
+        // 设置标题，按不同情况
         if (source === "built-in"){
-            title = content.split(",")[0];
+            let content_split = content.split(",");
+            title = content_split[0];
+            let pre = '';
+            let content1 = [];
+            for (content_i in content_split) {
+                // ［例］...
+                let item = content_split[content_i];
+                if (pre != '' && pre != title && (pre[0] != '［' || item[0] != '［' || pre.slice(0, 4) != item.slice(0, 4))) {
+                    content1.push(pre);
+                }
+                pre = item;
+            }
+            content = content1.join();
         } else {
             title = "第"+(i+1)+"行";
         }
