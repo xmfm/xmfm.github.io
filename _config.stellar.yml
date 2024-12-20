@@ -61,13 +61,13 @@ site_tree:
   # -- 列表类页面 -- #
   # 主页配置
   home:
-    leftbar: weblinks, sitelinks, welcome, # recent
+    leftbar: weblinks, sitelinks, welcome, recent
     rightbar: 
   # 博客列表页配置
   index_blog:
     base_dir: blog # 只影响自动生成的页面路径
     menu_id: post # 未在 front-matter 中指定 menu_id 时，layout 为 post 的页面默认使用这里配置的 menu_id
-    leftbar: weblinks, sitelinks, welcome, recent # for categories/tags/archives
+    leftbar: weblinks, sitelinks, recent # for categories/tags/archives
     rightbar: 
     nav_tabs:  # 近期发布 分类 标签 专栏 归档 and ...
       # '歌词': /categories/歌词
