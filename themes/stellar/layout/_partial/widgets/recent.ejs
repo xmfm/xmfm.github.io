@@ -26,9 +26,40 @@ function layoutDiv() {
   } else if (page.notebook) {
     arr = site.pages.filter(p => p.notebook === page.notebook).sort('-updated')
   } else {
-    arr = site.posts.filter( p => p.title && p.title.length > 0)
-    arr = arr.sort("updated", -1)
-  }
+    function intersection(p, cfg) {
+      let category1 = new Set();
+      let category2 = new Set();
+      let tag1 = new Set();
+      let tag2 = new Set();
+      if (p.category && p.category.length){
+        console.log(p.category.data[0].name);
+        console.log('pc');
+        category1.add(p.category.date[0].name);
+      }
+      category1.add(p.source.split('/')[1])
+      if (p.tags && p.tags.length){
+        console.log(p.tags.data[0].name);
+        tag1.add(p.tags.data[0].name);
+      }
+      for (i in cfg){
+        let _cfg = cfg[i].split(' ');
+        if (_cfg[0] === "category"){
+          category2.add(_cfg[1]);
+        }
+        if (_cfg[0] === "tag"){
+          tag2.add(_cfg[1]);
+        }
+      }
+      console.log(category1, category2, tag1, tag2);
+      if (category1.size + category2.size === Array.from(new Set([...category1,...category2])).length && tag1.size + tag2.size === Array.from(new Set([...tag1,...tag2])).length){
+        return false;
+      } else {
+        return true;
+      }
+    }
+    arr = site.posts.filter( p => p.title && p.title.length > 0 && !intersection(p, config.index2_generators[0].exclude));
+    arr = arr.sort("updated", -1);
+}
   el += '<div class="widget-body fs14">'
   arr = arr.filter(p => p.title?.length > 0)
   arr.length = item.limit
