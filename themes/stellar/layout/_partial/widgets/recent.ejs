@@ -56,7 +56,7 @@ function layoutDiv() {
         return true;
       }
     }
-    arr = site.posts.filter( p => p.title && p.title.length > 0 && !intersection(p, ["category 歌词"])); //config.index2_generators[0].exclude
+    arr = site.posts.filter( p => p.title && p.title.length > 0); // && !intersection(p, ["category 歌词"])); //config.index2_generators[0].exclude
     arr = arr.sort("updated", -1);
 }
   el += '<div class="widget-body fs14">'

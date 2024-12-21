@@ -139,3 +139,7 @@ markdown:
 #   exclude:
 #     - category 歌词
 
+hide_posts:
+  enable: true
+  # For advanced usage of allowlist/blocklist, check `lib/isGeneratorAllowed.test.js` for more test cases.
+  allowlist_generators: ['category']

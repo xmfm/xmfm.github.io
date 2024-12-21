@@ -4,6 +4,7 @@ date: 2023-07-05
 tags: 
   - 高橋李依
 description: B小町　アイ（高橋李依）
+hidden: true
 ---
 ア・ナ・タのアイドル  
 サインはB チュッ  
