@@ -620,7 +620,7 @@ style:
     # 可以设置：纯色/渐变色/图片作为背景
     # background: var(--leftbar-bg)
     # background-image: url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.13/image/sidebar-bg1@small.jpg)
-    background-image: url(https://pic.img.wang/img/2024/12/04/674fb587d49cc.jpg)  # rikka.jpg
+    background-image: url(https://gitee.com/xmfm/pic/raw/master/rikka.jpg)  # rikka.jpg
     blur-px: 3px
     blur-bg: var(--alpha60)
   paginator:
