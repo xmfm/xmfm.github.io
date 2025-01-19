@@ -87,10 +87,10 @@ weblinks:
   - icon: https://www.yuque.com/favicon.ico
     title: 语雀
     url: https://www.yuque.com/xmfm
-  - icon: https://github.com/favicon.ico
+  - icon: /images/github.ico
     title: GitHub
     url: https://www.github.com/xmfm
-  - icon: https://www.icloud.com.cn/system/icloud.com/2426Hotfix47/db8dbf8664914b03532511dd45f27ca9.png
+  - icon: /images/email.ico
     title: 邮箱
     url: mailto:rikka@takanasi.com
 
