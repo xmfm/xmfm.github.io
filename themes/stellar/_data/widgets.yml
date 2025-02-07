@@ -79,32 +79,33 @@ tagtree:
 
 weblinks:
   layout: linklist
-  column: 4
+  columns: 4
   items:
-  - icon: https://www.bilibili.com/favicon.ico
-    title: bilibili
-    url: https://space.bilibili.com/4298216
-  - icon: https://www.yuque.com/favicon.ico
-    title: 语雀
-    url: https://www.yuque.com/xmfm
-  - icon: /images/github.ico
-    title: GitHub
-    url: https://www.github.com/xmfm
-  - icon: /images/email.ico
-    title: 邮箱
-    url: mailto:rikka@takanasi.com
+    - icon: https://www.bilibili.com/favicon.ico
+      title: bilibili
+      url: https://space.bilibili.com/4298216
+    - icon: https://www.yuque.com/favicon.ico
+      title: 语雀
+      url: https://www.yuque.com/xmfm
+    - icon: /images/github.ico
+      title: GitHub
+      url: https://www.github.com/xmfm
+    - icon: /images/email.ico
+      title: 邮箱
+      url: mailto:rikka@takanasi.com
 
   
 sitelinks:
   layout: linklist
-  column: 1
+  title: 网页应用
+  columns: 1
   items:
-  - icon: 
-    title: 关于我
-    url: /about/
-  - icon: 
-    title: 定时通知
-    url: /notifytimer
-  - icon:
-    title: 六子棋
-    url: /connect6
+    - icon: 
+      title: 关于我
+      url: /about/
+    - icon: 
+      title: 定时通知
+      url: /notifytimer
+    - icon:
+      title: 六子棋
+      url: /connect6
