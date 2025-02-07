@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>六子棋</title>
+    <style>
+        canvas {
+            border: 1px solid #000;
+            cursor: pointer;
+        }
+        .controls {
+            margin: 10px;
+        }
+        button {
+            padding: 8px 15px;
+            font-size: 16px;
+            margin: 5px;
+        }
+        select {
+            padding: 5px;
+            font-size: 16px;
+        }
+        .info {
+            font-size: 20px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <select id="mode">
+            <option value="self">自我对弈</option>
+            <option value="vsBlackAI">对战黑方AI</option>
+            <option value="vsWhiteAI">对战白方AI</option>
+        </select>
+        <button id="restart">重新开始</button>
+    </div>
+    <div class="info" id="info">黑方落子（剩余1子）</div>
+    <canvas id="board" width="570" height="570"></canvas>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        const canvas = document.getElementById('board');
+        const ctx = canvas.getContext('2d');
+        const info = document.getElementById('info');
+        const modeSelect = document.getElementById('mode');
+        const restartBtn = document.getElementById('restart');
+        
+        const BOARD_SIZE = 19;
+        const CELL_SIZE = 30;
+        const STONE_RADIUS = 13;
+        const STAR_POINTS = [[3,3], [3,9], [3,15], [9,3], [9,9], [9,15], [15,3], [15,9], [15,15]]; // 星位坐标
+
+        // 初始化WebSocket连接
+        const socket = io('ws://api.takanasi.com');
+        
+        let gameState = {
+            board: Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(0)),
+            currentPlayer: 1,
+            stonesToPlace: 1,
+            gameOver: false
+        };
+
+        // 初始化棋盘
+        function initBoard() {
+            ctx.fillStyle = '#eee';  //DEB887
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制网格
+            ctx.strokeStyle = '#000';
+            for (let i = 0; i < BOARD_SIZE; i++) {
+                ctx.beginPath();
+                ctx.moveTo(15 + i * CELL_SIZE, 15);
+                ctx.lineTo(15 + i * CELL_SIZE, canvas.height - 15);
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(15, 15 + i * CELL_SIZE);
+                ctx.lineTo(canvas.width - 15, 15 + i * CELL_SIZE);
+                ctx.stroke();
+            }
+            
+            // 绘制星位
+            ctx.fillStyle = '#000';
+            STAR_POINTS.forEach(([x, y]) => {
+                ctx.beginPath();
+                ctx.arc(15 + x * CELL_SIZE, 15 + y * CELL_SIZE, 3, 0, Math.PI * 2);
+                ctx.fill();
+            });
+			
+			if (modeSelect.value === 'vsBlackAI') {
+				placeStone(Math.floor(19/2), Math.floor(19/2));
+			}
+        }
+
+        // 绘制棋子
+        function drawStone(x, y, player) {
+            ctx.beginPath();
+            ctx.arc(15 + x * CELL_SIZE, 15 + y * CELL_SIZE, STONE_RADIUS, 0, Math.PI * 2);
+            ctx.fillStyle = player === 1 ? '#000' : '#FFF';
+            ctx.fill();
+            ctx.stroke();
+        }
+
+		// 检查胜利条件
+        function checkWin(x, y, player) {
+            const directions = [
+                [[-1, 0], [1, 0]],  // 水平
+                [[0, -1], [0, 1]],  // 垂直
+                [[-1, -1], [1, 1]], // 主对角线
+                [[-1, 1], [1, -1]]  // 副对角线
+            ];
+
+            for (let [dir1, dir2] of directions) {
+                let count = 1;
+                
+                let [dx, dy] = dir1;
+                let cx = x + dx, cy = y + dy;
+                while (cx >= 0 && cx < BOARD_SIZE && cy >= 0 && cy < BOARD_SIZE && 
+                       gameState.board[cx][cy] === player) {
+                    count++;
+                    cx += dx;
+                    cy += dy;
+                }
+
+                [dx, dy] = dir2;
+                cx = x + dx, cy = y + dy;
+                while (cx >= 0 && cx < BOARD_SIZE && cy >= 0 && cy < BOARD_SIZE && 
+                       gameState.board[cx][cy] === player) {
+                    count++;
+                    cx += dx;
+                    cy += dy;
+                }
+
+                if (count >= 6) return true;
+            }
+            return false;
+        }
+
+
+        // 发送消息
+        function socketSend() {
+            const mode = modeSelect.value;
+            const isAITurn = 
+                (mode === 'vsBlackAI' && gameState.currentPlayer === 1) ||
+                (mode === 'vsWhiteAI' && gameState.currentPlayer === -1);
+
+            if (isAITurn && !gameState.gameOver) {
+                try {
+					socket.emit('ai_move', {
+						board: gameState.board,
+						player: gameState.currentPlayer,
+						stones_left: gameState.stonesToPlace
+					});
+
+                } catch (error) {
+                    console.error('网络错误:', error);
+                }
+            }
+        }
+		
+		socket.on('ai_response', (msg)=>{
+			const mode = modeSelect.value;
+            const isAITurn = 
+                (mode === 'vsBlackAI' && gameState.currentPlayer === 1) ||
+                (mode === 'vsWhiteAI' && gameState.currentPlayer === -1);
+
+            if (isAITurn && !gameState.gameOver) {
+                try {
+					const x = msg['x'];
+					const y = msg['y'];
+					placeStone(x, y);
+
+                } catch (error) {
+                    console.error('网络错误:', error);
+                }
+            }
+		});
+
+        // 修改落子逻辑
+        function placeStone(x, y) {
+            if (gameState.board[x][y] !== 0) return false;
+            
+            gameState.board[x][y] = gameState.currentPlayer;
+            drawStone(x, y, gameState.currentPlayer);
+            
+            if (checkWin(x, y, gameState.currentPlayer)) {
+                gameState.gameOver = true;
+                info.textContent = `${gameState.currentPlayer === 1 ? '黑方' : '白方'}获胜！`;
+                return true;
+            }
+
+            gameState.stonesToPlace--;
+            
+            if (gameState.stonesToPlace === 0) {
+                gameState.currentPlayer *= -1;
+                gameState.stonesToPlace = (gameState.currentPlayer === 1 && 
+                    gameState.board.flat().filter(x => x !== 0).length === 1) ? 1 : 2;
+                
+                // 切换玩家后发送
+                setTimeout(socketSend, 100);
+            }
+            
+            updateInfo();
+            return true;
+        }
+
+        // 点击事件处理
+        canvas.addEventListener('click', async (e) => {
+            if (gameState.gameOver) return;
+            
+            const mode = modeSelect.value;
+            const isAITurn = 
+                (mode === 'vsBlackAI' && gameState.currentPlayer === 1) ||
+                (mode === 'vsWhiteAI' && gameState.currentPlayer === -1);
+            
+            // 玩家回合处理
+            if (!isAITurn) {
+                const rect = canvas.getBoundingClientRect();
+                const x = Math.round((e.clientX - rect.left - 15) / CELL_SIZE);
+                const y = Math.round((e.clientY - rect.top - 15) / CELL_SIZE);
+
+                if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE) return;
+                placeStone(x, y);
+            }
+        });
+
+
+
+        // 更新信息显示
+        function updateInfo() {
+            const player = gameState.currentPlayer === 1 ? '黑方' : '白方';
+            info.textContent = `${player}落子（剩余${gameState.stonesToPlace}子）`;
+        }
+
+
+        // 重新开始游戏
+        function restartGame() {
+            gameState = {
+                board: Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(0)),
+                currentPlayer: 1,
+                stonesToPlace: 1,
+                gameOver: false
+            };
+            initBoard();
+            updateInfo();
+        }
+
+        // 初始化
+        restartBtn.addEventListener('click', restartGame);
+        initBoard();
+    </script>
+</body>
+</html>

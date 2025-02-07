@@ -105,3 +105,6 @@ sitelinks:
   - icon: 
     title: 定时通知
     url: /notifytimer
+  - icon:
+    title: 六子棋
+    url: /connect6
