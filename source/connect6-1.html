@@ -218,8 +218,7 @@
                 } catch (error) {
                     console.error('网络错误:', error);
                 }
-            }
-            elif (modeSelect.value === 'pvp') {
+            }else if (modeSelect.value === 'pvp') {
                 socket.emit('pvp_move', {
                     gameState: gameState,
                     room: players[ip].room
