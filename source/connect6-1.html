@@ -235,7 +235,7 @@
             const room = roomCodeInput.value;
             socket.emit('join_room', {
                 room: room,
-                role: document.activeElement === joinAsPlayer ? 'player' : 'spectator'
+                role: 'player'
             });
         }
 
