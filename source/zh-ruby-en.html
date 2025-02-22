@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>英文单词中文标注工具</title>
+    <style>
+        body {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+        .container {
+            display: grid;
+            gap: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+        }
+        .output {
+            border: 1px solid #ccc;
+            padding: 15px;
+            line-height: 1.8;
+        }
+        ruby {
+            margin: 0 2px;
+            cursor: help;
+        }
+        rt {
+            font-size: 0.7em;
+            color: #d32f2f;
+        }
+        /* 悬停模式样式 */
+        .hover-mode rt {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .hover-mode ruby:hover rt {
+            opacity: 1;
+        }
+        button {
+            padding: 8px 20px;
+            cursor: pointer;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        #processBtn {
+            transition: opacity 0.3s;
+        }
+        #processBtn.processing {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        .error-message {
+            color: #dc3545;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <textarea id="input" placeholder="请输入英文文本..."></textarea>
+        <button id="processBtn" onclick="processText()">处理</button>
+        <button onclick="toggleMode()">切换模式（当前：<span id="mode">全部显示</span>）</button>
+        <div id="output" class="output"></div>
+        <div class="error-message" id="errorMsg"></div>
+    </div>
+
+    <script>
+        const API_ENDPOINT = "https://api.takanasi.com/zhRubyEn"; // 替换为实际API地址
+        let isHoverMode = false;
+        let isProcessing = false;
+
+        async function processText() {
+            if (isProcessing) return;
+            
+            const input = document.getElementById('input').value.trim();
+            if (!input) {
+                showError('请输入要翻译的内容');
+                return;
+            }
+
+            const btn = document.getElementById('processBtn');
+            try {
+                // 更新处理状态
+                isProcessing = true;
+                btn.disabled = true;
+                btn.classList.add('processing');
+                clearError();
+
+                // 调用API
+                const translations = await fetchTranslations(input);
+                renderOutput(input, translations);
+            } catch (error) {
+                showError(`翻译失败: ${error.message}`);
+            } finally {
+                // 恢复按钮状态
+                isProcessing = false;
+                btn.disabled = false;
+                btn.classList.remove('processing');
+            }
+        }
+
+        async function fetchTranslations(text) {
+            try {
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP错误 ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // 验证返回数据格式
+                if (typeof data !== 'object' || data === null) {
+                    throw new Error('无效的API响应格式');
+                }
+                
+                return data;
+            } catch (error) {
+                throw new Error(`API请求失败: ${error.message}`);
+            }
+        }
+
+        function renderOutput(originalText, translations) {
+            const words = originalText.match(/\b[\w']+\b/g) || [];
+            const output = document.getElementById('output');
+            
+            output.className = `output ${isHoverMode ? 'hover-mode' : ''}`;
+            
+            const htmlContent = words.map(word => {
+                const lowerWord = word.toLowerCase();
+                // 获取翻译，保留原单词大小写
+                if (translations[lowerWord]) {
+                    translation = translations[lowerWord];
+                    return isHoverMode ? 
+                        `<ruby>${word}<rt>${translation}</rt></ruby>` :
+                        `<ruby>${word}<rt>${translation}</rt></ruby>`;
+                } else {
+                    return word;
+                }
+            }).join('');
+
+            output.innerHTML = htmlContent;
+            console.log(translations);
+        }
+
+        function showError(message) {
+            const errorElem = document.getElementById('errorMsg');
+            errorElem.textContent = message;
+            errorElem.style.display = 'block';
+        }
+
+        function clearError() {
+            document.getElementById('errorMsg').style.display = 'none';
+        }
+
+        function toggleMode() {
+            isHoverMode = !isHoverMode;
+            document.getElementById('mode').textContent = isHoverMode ? '悬停显示' : '全部显示';
+            const output = document.getElementById('output');
+            output.className = `output ${isHoverMode ? 'hover-mode' : ''}`;
+        }
+    </script>
+</body>
+</html>
