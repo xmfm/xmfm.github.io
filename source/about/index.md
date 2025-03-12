@@ -54,10 +54,7 @@ INTP-9w1-954
 
 ## 动画
 
-* 新世界より
-* PSYCHO-PASS サイコパス
-* 京都アニメ
-* 芳文社
+* [bangumi](https://bgm.tv/user/xiaomao)
 
 ## 小说
 
