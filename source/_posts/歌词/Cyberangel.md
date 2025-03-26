@@ -1,6 +1,6 @@
 ---
 title: Cyberangel
-hide: true
+hidden: true
 ---
 Corrupt binary codes infecting my mind
 
